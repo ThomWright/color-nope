@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 authors = ["Thom Wright <dev@thomwright.co.uk>"]
 description = """
-Support for options to disable colors in the terminal
+Support for standard options to disable colors in the terminal
 """
 documentation = "https://docs.rs/color-nope"
 homepage = "https://github.com/ThomWright/color-nope"
