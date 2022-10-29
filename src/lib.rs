@@ -16,8 +16,6 @@ doctest!("../README.md");
 
 use std::ffi::OsString;
 
-pub use atty::Stream;
-
 /// Decides whether color should be enabled, based on the environment and the
 /// target stream.
 ///
@@ -90,11 +88,28 @@ impl ColorNope {
     }
 
     /// Should color be enabled for the target stream?
-    pub fn enable_color_for(&self, stream: atty::Stream) -> bool {
-        atty::is(stream)
+    pub fn enable_color_for(&self, stream: Stream) -> bool {
+        atty::is(stream.into())
             && term_allows_color(self.term_env.as_ref())
             && self.no_color_env.is_none()
             && !self.no_color_flag
+    }
+}
+
+/// Output streams.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Stream {
+    #[allow(missing_docs)]
+    Stdout,
+    #[allow(missing_docs)]
+    Stderr,
+}
+impl From<Stream> for atty::Stream {
+    fn from(s: Stream) -> Self {
+        match s {
+            Stream::Stdout => atty::Stream::Stdout,
+            Stream::Stderr => atty::Stream::Stderr,
+        }
     }
 }
 
