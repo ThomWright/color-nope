@@ -117,5 +117,7 @@ fn term_allows_color(term: Option<&OsString>) -> bool {
     // where TERM is more rigorously set.
     if let Some(v) = term {
         v != "dumb"
+    } else {
+        true
     }
 }
