@@ -1,5 +1,10 @@
 # Color nope
 
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ThomWright/color-nope/ci)
+![GitHub](https://img.shields.io/github/license/ThomWright/color-nope)
+![Crates.io](https://img.shields.io/crates/v/color-nope)
+![docs.rs](https://img.shields.io/docsrs/color-nope)
+
 An implementation of the [NO_COLOR](https://no-color.org/) standard, following the [Command Line Interface Guidelines](https://clig.dev/#output).
 
 ## Examples
