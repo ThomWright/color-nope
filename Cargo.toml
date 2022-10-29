@@ -1,0 +1,21 @@
+[package]
+name = "color-nope"
+version = "0.1.0"
+edition = "2021"
+authors = ["Thom Wright <dev@thomwright.co.uk>"]
+description = """
+Support for options to disable colors in the terminal
+"""
+documentation = "https://docs.rs/color-nope"
+homepage = "https://github.com/ThomWright/color-nope"
+repository = "https://github.com/ThomWright/color-nope"
+readme = "README.md"
+keywords = ["color", "colour", "no_color", "terminal", "tty"]
+categories = ["command-line-interface"]
+license = "MIT"
+
+[dependencies]
+atty = "0.2.14"
+
+[dev-dependencies]
+doc-comment = "0.3.3"
