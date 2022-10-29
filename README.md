@@ -51,7 +51,11 @@ use color_nope::{ColorNope, Stream};
 let enable_color = ColorNope::new(
     std::env::var_os("TERM"),
     std::env::var_os("NO_COLOR"),
-    std::env::args_os().any(|a| a == "--no-color"),
+    if std::env::args_os().any(|a| a == "--no-color") {
+        Some(false)
+    } else {
+        None
+    },
 )
 .enable_color_for(Stream::Stdout);
 

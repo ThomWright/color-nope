@@ -1,4 +1,6 @@
 /*!
+Support for standard options to disable colors in the terminal.
+
 An implementation of the [NO_COLOR](https://no-color.org/) standard, following
 the [Command Line Interface Guidelines](https://clig.dev/#output).
 
@@ -43,7 +45,11 @@ use std::ffi::OsString;
 ///     ColorNope::new(
 ///         std::env::var_os("TERM"),
 ///         std::env::var_os("NO_COLOR"),
-///         std::env::args_os().any(|a| a == "--no-color"),
+///         if std::env::args_os().any(|a| a == "--no-color") {
+///             Some(false)
+///         } else {
+///             None
+///         },
 ///     )
 ///     .enable_color_for(Stream::Stdout),
 ///     false
@@ -53,7 +59,7 @@ use std::ffi::OsString;
 pub struct ColorNope {
     term_env: Option<OsString>,
     no_color_env: Option<OsString>,
-    no_color_flag: bool,
+    force_color: Option<bool>,
 }
 
 impl ColorNope {
@@ -63,36 +69,38 @@ impl ColorNope {
     ///
     /// - `term_env` – `TERM` environmental variable.
     /// - `no_color_env` – `NO_COLOR` environmental variable.
-    /// - `no_color_flag` - indicates the presence of a command-line flag
-    /// overriding the environment, e.g. `--no-color`.
+    /// - `force_color` - if Some, override all other options.
     pub fn new(
         term_env: Option<OsString>,
         no_color_env: Option<OsString>,
-        no_color_flag: bool,
+        force_color: Option<bool>,
     ) -> ColorNope {
         ColorNope {
             term_env,
             no_color_env,
-            no_color_flag,
+            force_color,
         }
     }
 
-    /// Checks the `TERM` and `NO_COLOR` environmental variables, as well as
-    /// the presence of a `--no-color` flag.
+    /// Uses the `TERM` and `NO_COLOR` environmental variables.
     pub fn from_env() -> ColorNope {
         ColorNope {
             term_env: std::env::var_os("TERM"),
             no_color_env: std::env::var_os("NO_COLOR"),
-            no_color_flag: std::env::args_os().any(|a| a == "--no-color"),
+            force_color: None,
         }
     }
 
     /// Should color be enabled for the target stream?
     pub fn enable_color_for(&self, stream: Stream) -> bool {
-        atty::is(stream.into())
-            && term_allows_color(self.term_env.as_ref())
-            && self.no_color_env.is_none()
-            && !self.no_color_flag
+        match self.force_color {
+            Some(force_color) => force_color,
+            None => {
+                atty::is(stream.into())
+                    && term_allows_color(self.term_env.as_ref())
+                    && self.no_color_env.is_none()
+            }
+        }
     }
 }
 
