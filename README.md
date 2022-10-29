@@ -11,7 +11,7 @@ use color_nope::{ColorNope, Stream};
 
 let enable_color = ColorNope::from_env().enable_color_for(Stream::Stdout);
 
-println!(enable_color);
+println!("{enable_color}");
 ```
 
 Or by passing in your own values:
@@ -26,5 +26,5 @@ let enable_color = ColorNope::new(
 )
 .enable_color_for(Stream::Stdout);
 
-println!(enable_color);
+println!("{enable_color}");
 ```
