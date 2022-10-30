@@ -108,7 +108,7 @@ impl ColorNope {
             None => {
                 atty::is(stream.into())
                     && term_allows_color(self.term_env.as_ref())
-                    && self.no_color_env.is_none()
+                    && no_color_allows_color(self.no_color_env.as_ref())
             }
         }
     }
@@ -147,6 +147,10 @@ impl Force {
             Off => false,
         }
     }
+}
+
+fn no_color_allows_color(no_color: Option<&OsString>) -> bool {
+    no_color.map_or(true, |s| s.is_empty())
 }
 
 // These next functions are shamelessly stolen from [termcolor](https://github.com/BurntSushi/termcolor).
