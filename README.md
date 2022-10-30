@@ -25,7 +25,7 @@ What I wanted:
 
     Sometimes one might be connected to a tty, and the other piped to a file (for example).
 
-3. Keep access to global state (e.g. env vars) exclusively inside my application (not in libraries).
+3. To keep access to global state (e.g. env vars) exclusively inside my application (not in libraries).
 
     I have a strong belief that for the most part, libraries shouldn't touch global state. I, as the application developer, should be able to decide which environment variables I want to use and should be able to pass those to libraries.
 
@@ -46,13 +46,13 @@ println!("{enable_color}");
 Or by passing in your own values:
 
 ```rust
-use color_nope::{ColorNope, Stream};
+use color_nope::{ColorNope, Stream, Force};
 
 let enable_color = ColorNope::new(
     std::env::var_os("TERM"),
     std::env::var_os("NO_COLOR"),
     if std::env::args_os().any(|a| a == "--no-color") {
-        Some(false)
+        Some(Force::Off)
     } else {
         None
     },

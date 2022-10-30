@@ -39,14 +39,14 @@ use std::ffi::OsString;
 /// Or by passing in your own values:
 ///
 /// ```rust
-/// use color_nope::{ColorNope, Stream};
+/// use color_nope::{ColorNope, Stream, Force};
 ///
 /// assert_eq!(
 ///     ColorNope::new(
 ///         std::env::var_os("TERM"),
 ///         std::env::var_os("NO_COLOR"),
 ///         if std::env::args_os().any(|a| a == "--no-color") {
-///             Some(false)
+///             Some(Force::Off)
 ///         } else {
 ///             None
 ///         },
@@ -59,21 +59,31 @@ use std::ffi::OsString;
 pub struct ColorNope {
     term_env: Option<OsString>,
     no_color_env: Option<OsString>,
-    force_color: Option<bool>,
+    force_color: Option<Force>,
 }
 
 impl ColorNope {
     /// Create a new instance without touching the environment.
     ///
-    /// # Arguments
+    /// [`ColorNope`] considers the `TERM` and `NO_COLOR` environmental
+    /// variables (`term_env` and `no_color_env` respectively).
     ///
-    /// - `term_env` – `TERM` environmental variable.
-    /// - `no_color_env` – `NO_COLOR` environmental variable.
-    /// - `force_color` - if Some, override all other options.
+    /// These values can be overridden by using `force_color`.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// # use color_nope::ColorNope;
+    /// ColorNope::new(
+    ///     std::env::var_os("TERM"),
+    ///     std::env::var_os("NO_COLOR"),
+    ///     None
+    /// );
+    /// ```
     pub fn new(
         term_env: Option<OsString>,
         no_color_env: Option<OsString>,
-        force_color: Option<bool>,
+        force_color: Option<Force>,
     ) -> ColorNope {
         ColorNope {
             term_env,
@@ -94,7 +104,7 @@ impl ColorNope {
     /// Should color be enabled for the target stream?
     pub fn enable_color_for(&self, stream: Stream) -> bool {
         match self.force_color {
-            Some(force_color) => force_color,
+            Some(force) => force.enable_color(),
             None => {
                 atty::is(stream.into())
                     && term_allows_color(self.term_env.as_ref())
@@ -117,6 +127,24 @@ impl From<Stream> for atty::Stream {
         match s {
             Stream::Stdout => atty::Stream::Stdout,
             Stream::Stderr => atty::Stream::Stderr,
+        }
+    }
+}
+
+/// Override other settings to force colors on or off.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum Force {
+    #[allow(missing_docs)]
+    On,
+    #[allow(missing_docs)]
+    Off,
+}
+impl Force {
+    fn enable_color(&self) -> bool {
+        use Force::*;
+        match self {
+            On => true,
+            Off => false,
         }
     }
 }
